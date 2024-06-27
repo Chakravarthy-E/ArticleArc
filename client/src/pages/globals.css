@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Outfit", sans-serif;
+}
+
+.input-style {
+  @apply border border-gray-300 rounded w-[500px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-blue-500;
+}
+.label-style {
+  @apply block text-gray-700 text-sm font-bold mb-2;
+}
+
+.button-style {
+  @apply px-5 py-2 bg-slate-900 text-white font-outfit rounded;
+}
+
+.tag {
+  @apply bg-green-700 text-white px-4 py-2 rounded-full w-fit font-semibold uppercase;
+}
+
+.tiptap.ProseMirror {
+  border: 1px solid;
+  border-color: rgb(209 213 219);
+  outline: none;
+  border-radius: 0.25rem;
+}
+.is-active {
+  background-color: #dadada;
+  border-radius: 2px;
+  padding: 4px;
+}
+
+#hero {
+  filter: brightness(0.7);
+}
+
+.blogDescription h1,
+.blogDescription h2,
+.blogDescription h3,
+.blogDescription h4 {
+  margin-bottom: 1rem;
+}
+
+.blogDescription h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.blogDescription h2 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.blogDescription h3 {
+  font-size: 1.75rem;
+  font-weight: bold;
+}
+
+.blogDescription h4 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.blogDescription p {
+  margin-bottom: 1rem;
+}
+
+.blogDescription ul {
+  list-style-type: disc;
+  margin-left: 2rem;
+}
+
+.blogDescription ol {
+  list-style-type: decimal;
+  margin-left: 2rem;
+}
+
+.blogDescription li {
+  margin-bottom: 0.5rem;
+}
