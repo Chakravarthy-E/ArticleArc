@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch } from "react-redux";
-import { updateLoggedInState, updateProfile } from "@/src/lib/slices/auth";
+import { updateLoggedInState, updateProfile } from "../../lib/slices/auth";
 
 interface LoginData {
   email: string;

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import Image from "next/image";
-import { getUser } from "@/src/lib/actions/user";
 
 interface BlogInterface {
   banner: {
@@ -45,7 +44,6 @@ export default function Hero() {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/get-user/${blog?.owner}`
         );
-        console.log(response);
         setOwner(response.data.user.name);
       } catch (error) {
         console.log(error);
@@ -53,8 +51,6 @@ export default function Hero() {
     };
     getOwner();
   }, [blog?.owner]);
-  console.log(owner);
-  console.log(blog);
   return (
     <div className="min-h-screen flex items-center justify-center px-5 sm:px-10 py-10">
       {blog && (

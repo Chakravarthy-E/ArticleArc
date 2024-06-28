@@ -1,10 +1,10 @@
 "use client";
-import TipTapEditor from "@/src/components/ui/tiptapeditor";
+import TipTapEditor from "../../components/ui/tiptapeditor";
 import Protected from "../../hooks/useProtected";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { getAuthState } from "@/src/lib/slices/auth";
+import { getAuthState } from "../../lib/slices/auth";
 import axios from "axios";
 
 export default function CreateBlog() {

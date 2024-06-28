@@ -1,5 +1,5 @@
 "use client";
-import { clearProfile } from "@/src/lib/slices/auth";
+import { clearProfile } from "../../lib/slices/auth";
 import Cookies from "js-cookie";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
