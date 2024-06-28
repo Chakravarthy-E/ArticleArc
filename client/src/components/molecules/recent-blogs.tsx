@@ -12,6 +12,7 @@ interface BlogData {
     public_id: string;
     url: string;
   };
+  createdAt: any;
 }
 
 export default function RecentBlogs() {
