@@ -64,6 +64,7 @@ export default function Blog() {
             height={200}
             alt="image"
             className="rounded-lg h-80 w-full object-cover"
+            title={data?.title}
           />
           <div
             className="font-outfit text-gray-500 blogDescription"

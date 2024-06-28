@@ -13,7 +13,10 @@ export default function BlogCard({
   return (
     <>
       <Link key={_id} href={`/blog/${_id}`} as={`/blog/${_id}`}>
-        <div className="rounded-lg  opacity-90 hover:opacity-100 overflow-hidden border">
+        <div
+          className="rounded-lg  opacity-90 hover:opacity-100 overflow-hidden border"
+          title={title}
+        >
           <Image
             src={banner.url}
             width={300}

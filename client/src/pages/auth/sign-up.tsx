@@ -18,9 +18,11 @@ export default function SignIn() {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSignUp = async () => {
+    setLoading(true);
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/create`,
@@ -32,6 +34,7 @@ export default function SignIn() {
           email: "",
           password: "",
         });
+        setLoading(false);
         toast.success("Registration Successful");
         setTimeout(() => {
           router.push("/auth/sign-in");
@@ -40,6 +43,7 @@ export default function SignIn() {
     } catch (error: any) {
       toast.error(error.response.data.message);
     }
+    setLoading(false);
   };
 
   return (
@@ -111,7 +115,7 @@ export default function SignIn() {
 
           <div className="flex items-center space-x-4">
             <button className="button-style" onClick={handleSignUp}>
-              Sign Up
+              {loading ? "Loading..." : "Sign-Up "}
             </button>
             <p className="text-center">
               Already have account{" "}

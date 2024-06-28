@@ -19,11 +19,13 @@ export default function SignIn() {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/sign-in`,
@@ -35,7 +37,7 @@ export default function SignIn() {
           email: "",
           password: "",
         });
-
+        setLoading(false);
         dispatch(updateProfile(response.data?.user));
         console.log(response.data.user);
         dispatch(updateLoggedInState(true));
@@ -49,6 +51,7 @@ export default function SignIn() {
     } catch (error: any) {
       toast.error(error.response.data.message);
     }
+    setLoading(false);
   };
 
   const token = Cookies.get("token");
@@ -110,7 +113,7 @@ export default function SignIn() {
           </div>
           <div className="flex items-center space-x-4">
             <button className="button-style" onClick={handleLogin}>
-              Sign In
+              {loading ? "Loading..." : "Sign-In"}
             </button>
             <p className="text-center">
               Do not have account{" "}
