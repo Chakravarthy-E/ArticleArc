@@ -4,7 +4,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import BlogCard from "../atoms/blog-card";
 
-interface BlogData {
+export interface BlogData {
   _id: string;
   title: string;
   description: string;
@@ -13,6 +13,7 @@ interface BlogData {
     url: string;
   };
   createdAt: any;
+  tag: string;
 }
 
 export default function RecentBlogs() {

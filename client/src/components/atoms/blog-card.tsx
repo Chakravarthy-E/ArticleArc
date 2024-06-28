@@ -1,24 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
-
-interface BlogData {
-  _id: string;
-  title: string;
-  description: string;
-  banner: {
-    public_id: string;
-    url: string;
-  };
-  tag?: string;
-  createdAt: string;
-}
+import { BlogData } from "../molecules/recent-blogs";
 
 export default function BlogCard({
   _id,
   title,
   banner,
-  description,
   tag,
   createdAt,
 }: BlogData) {
