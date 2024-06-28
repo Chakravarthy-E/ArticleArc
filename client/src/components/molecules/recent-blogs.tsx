@@ -3,6 +3,7 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import BlogCard from "../atoms/blog-card";
+import RecentBlogLoader from "../atoms/recent-blogs-loader";
 
 export interface BlogData {
   _id: string;
@@ -14,6 +15,7 @@ export interface BlogData {
   };
   createdAt: any;
   tag: string;
+  owner: string;
 }
 
 export default function RecentBlogs() {
@@ -26,7 +28,7 @@ export default function RecentBlogs() {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <RecentBlogLoader />;
   }
 
   if (error) {

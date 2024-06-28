@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import Image from "next/image";
+import HeroSectionLoader from "../atoms/hero-section-loader";
 
 interface BlogInterface {
   banner: {
@@ -21,19 +22,23 @@ interface BlogInterface {
 export default function Hero() {
   const [blog, setBlog] = useState<BlogInterface | null>(null);
   const [owner, setOwner] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getBlog = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/get-all-blogs`
         );
         if (response.data.success) {
           setBlog(response.data.blogs[0]);
+          setLoading(false);
         }
       } catch (error) {
         console.error(error);
       }
+      setLoading(false);
     };
     getBlog();
   }, []);
@@ -51,6 +56,11 @@ export default function Hero() {
     };
     getOwner();
   }, [blog?.owner]);
+
+  if (loading) {
+    return <HeroSectionLoader />;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-5 sm:px-10 py-10">
       {blog && (
@@ -68,7 +78,7 @@ export default function Hero() {
                   alt="banner"
                   width={500}
                   height={400}
-                  className="w-full rounded-lg"
+                  className="w-full rounded-lg h-96 object-cover"
                 />
               </div>
               <div className="flex flex-col space-y-5 md:w-1/2">
@@ -81,7 +91,11 @@ export default function Hero() {
                 <h1 className="text-3xl md:text-5xl font-bold font-outfit">
                   {blog.title}
                 </h1>
-                <p className="text-gray-500 font-bold text-xl">By {owner}</p>
+                {owner && (
+                  <p className="text-gray-500 font-bold text-xl my-2">
+                    By {owner}
+                  </p>
+                )}
               </div>
             </div>
           </Link>

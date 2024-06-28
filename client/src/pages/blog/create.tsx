@@ -6,10 +6,11 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { getAuthState } from "../../lib/slices/auth";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 export default function CreateBlog() {
   const { profile } = useSelector(getAuthState);
-  console.log(profile);
+  const router = useRouter();
 
   const [editorContent, setEditorContent] = useState("");
   const [data, setData] = useState({
@@ -26,7 +27,6 @@ export default function CreateBlog() {
     }));
   }, [editorContent]);
 
-  // Handle changes from the TipTap editor
   const handleContentChange = (content: any) => {
     setEditorContent(content);
   };
@@ -43,6 +43,10 @@ export default function CreateBlog() {
       );
       if (response.status === 201) {
         toast.success("Blog created successfully:");
+
+        setTimeout(() => {
+          router.push("/profile");
+        }, 2000);
       }
       setData({
         banner: "",

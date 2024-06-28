@@ -1,4 +1,5 @@
 "use client";
+import BlogLoader from "@/src/components/atoms/blog-loader";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -22,23 +23,30 @@ export default function Blog() {
   const router = useRouter();
   const { id } = router.query;
   const [data, setData] = useState<BlogData | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchBlog() {
+      setLoading(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/get-blog/${id}`
         );
         if (response.data.success) {
           setData(response.data.blog);
+          setLoading(false);
         }
       } catch (error) {
         toast.error("error");
       }
+      setLoading(false);
     }
     fetchBlog();
   }, [id]);
 
+  if (loading) {
+    return <BlogLoader />;
+  }
   if (router.isFallback) {
     return <div>Loading...</div>;
   }

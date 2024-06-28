@@ -7,25 +7,32 @@ import BlogCard from "../components/atoms/blog-card";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 import DeleteConfirmModal from "../components/atoms/delete-blog-modal";
+import RecentBlogLoader from "../components/atoms/recent-blogs-loader";
+import ProfileLoader from "../components/atoms/profile-loader";
 
 function Profile() {
   const { profile } = useSelector(getAuthState);
   const [userBlogs, setUserBlogs] = useState<any[] | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const fetchUserBlogs = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/get-blogs-by-owner/${profile._id}`
         );
-
-        setUserBlogs(response.data);
+        if (response.status === 200) {
+          setUserBlogs(response.data);
+          setLoading(false);
+        }
       } catch (error) {
         console.error(error);
       }
+      setLoading(false);
     };
     fetchUserBlogs();
   }, [profile]);
@@ -66,6 +73,10 @@ function Profile() {
       router.push("/auth/sign-in");
     }
   }, [profile, router]);
+
+  if (loading) {
+    return <ProfileLoader />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-5 sm:px-10 py-10">
