@@ -65,7 +65,9 @@ export default function Hero() {
     <div className="min-h-screen flex items-center justify-center px-5 sm:px-10 py-10">
       {blog && (
         <div className="flex flex-col space-y-5 w-full max-w-7xl">
-          <h1 className="text-3xl font-bold font-outfit underline">Featured</h1>
+          <h1 className="text-3xl font-bold font-outfit underline">
+            Latest Blog
+          </h1>
           <Link
             href={`/blog/${blog._id}`}
             as={`/blog/${blog._id}`}

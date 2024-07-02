@@ -20,9 +20,6 @@ const Navbar = () => {
     dispatch(clearProfile());
     setOpenLogoutModal(false);
     toast.success("Logged out successfully");
-    setTimeout(() => {
-      router.push("/auth/sign-in");
-    }, 1000);
   };
 
   const closeLogOutModal = () => {
@@ -45,7 +42,7 @@ const Navbar = () => {
 
   const renderProfileButton = () => {
     if (router.pathname === "/profile") {
-      return null; // Hide the "Sign in" button when on the sign-in page
+      return null;
     }
 
     return (
@@ -60,10 +57,10 @@ const Navbar = () => {
       <nav className="flex items-center justify-between px-10 py-2 border-b font-outfit">
         <div>
           <h1
-            className="text-3xl font-semibold cursor-pointer"
+            className="text-3xl font-bold cursor-pointer"
             onClick={() => router.push("/")}
           >
-            Blogs
+            Article<span className="text-gray-600">Arc</span>
           </h1>
         </div>
         <div className="space-x-5">

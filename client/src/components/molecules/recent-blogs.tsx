@@ -41,7 +41,7 @@ export default function RecentBlogs() {
         <div className="flex items-center justify-center px-5 sm:px-10 py-10">
           <div className="w-full max-w-7xl">
             <h1 className="text-3xl font-semibold my-10 font-outfit">
-              Recent Blog Posts
+              Recent Blogs
             </h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {data?.data.blogs.slice(1)?.map((blog) => (
