@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
-import { BlogData } from "../molecules/recent-blogs";
+import { BlogData } from "../../lib/features/api/apiSlice";
+import { BlogInterface } from "../molecules/hero";
 
 export default function BlogCard({
   _id,
@@ -9,7 +10,7 @@ export default function BlogCard({
   banner,
   tag,
   createdAt,
-}: BlogData) {
+}: BlogInterface) {
   return (
     <>
       <Link key={_id} href={`/blog/${_id}`} as={`/blog/${_id}`}>

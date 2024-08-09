@@ -1,8 +1,7 @@
-import Head from "next/head";
 import Hero from "../components/molecules/hero";
 import RecentBlogs from "../components/molecules/recent-blogs";
 
-export default function Home({ data }: any) {
+export default function Home() {
   return (
     <>
       <div className="space-y-4">
