@@ -1,8 +1,8 @@
 "use client";
-import axios from "axios";
+import { useRegisterMutation } from "@/src/lib/features/api/apiSlice";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
@@ -12,41 +12,33 @@ interface RegistrationData {
   password: string;
 }
 
-export default function SignIn() {
+export default function SignUp() {
+  const [register, { isSuccess, isLoading }] = useRegisterMutation();
   const [user, setUser] = useState<RegistrationData>({
     name: "",
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSignUp = async () => {
-    setLoading(true);
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/create`,
-        user
-      );
-      if (response.data.success) {
-        setUser({
-          name: "",
-          email: "",
-          password: "",
-        });
-        setLoading(false);
-        toast.success("Registration Successful");
-        setTimeout(() => {
-          router.push("/auth/sign-in");
-        }, 1000);
-      }
-    } catch (error: any) {
-      toast.error(error.response.data.message);
+      await register(user).unwrap();
+    } catch (err: any) {
+      const errorMessage = err?.data?.message || "Registration failed";
+      toast.error(errorMessage);
     }
-    setLoading(false);
   };
-
+  useEffect(() => {
+    if (isSuccess) {
+      if (isSuccess) {
+        toast.success("Registration Successful");
+        setUser({ name: "", email: "", password: "" });
+        setTimeout(() => router.push("/auth/sign-in"), 1000);
+      }
+    }
+  }, [isSuccess]);
   return (
     <>
       <Head>
@@ -123,7 +115,7 @@ export default function SignIn() {
 
             <div className="flex items-center space-x-4">
               <button className="button-style" onClick={handleSignUp}>
-                {loading ? "Loading..." : "Sign-Up "}
+                {isLoading ? "Loading..." : "Sign-Up "}
               </button>
               <p className="text-center">
                 Already have account{" "}

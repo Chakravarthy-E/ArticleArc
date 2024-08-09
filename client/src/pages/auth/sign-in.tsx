@@ -7,8 +7,9 @@ import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch } from "react-redux";
-import { updateLoggedInState, updateProfile } from "../../lib/slices/auth";
+import { updateLoggedInState } from "../../lib/slices/auth";
 import Head from "next/head";
+import { useLoginMutation } from "@/src/lib/features/api/apiSlice";
 
 interface LoginData {
   email: string;
@@ -19,41 +20,36 @@ export default function SignIn() {
     email: "",
     password: "",
   });
+  const [login, { data, isSuccess, isLoading }] = useLoginMutation();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
-    setLoading(true);
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/sign-in`,
-        user
-      );
-
-      if (response.data.success) {
-        setUser({
-          email: "",
-          password: "",
-        });
-        setLoading(false);
-        dispatch(updateProfile(response.data?.user));
-        console.log(response.data.user);
-        dispatch(updateLoggedInState(true));
-        Cookies.set("user", JSON.stringify(response.data.user));
-        Cookies.set("token", response.data.token);
-        toast.success("Logged in Successful");
-        setTimeout(() => {
-          router.push("/");
-        }, 1000);
-      }
+      await login(user).unwrap();
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      const errorMessage = error?.data?.message || "Login failed";
+      toast.error(errorMessage);
     }
-    setLoading(false);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      setUser({
+        email: "",
+        password: "",
+      });
+      dispatch(updateLoggedInState(true));
+      Cookies.set("user", JSON.stringify(data.user));
+      Cookies.set("token", data.token);
+      toast.success("Logged in Successful");
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+    }
+  }, [isSuccess]);
 
   const token = Cookies.get("token");
   useEffect(() => {
@@ -122,7 +118,7 @@ export default function SignIn() {
             </div>
             <div className="flex items-center space-x-4">
               <button className="button-style" onClick={handleLogin}>
-                {loading ? "Loading..." : "Sign-In"}
+                {isLoading ? "Loading..." : "Sign-In"}
               </button>
               <p className="text-center">
                 Do not have account{" "}

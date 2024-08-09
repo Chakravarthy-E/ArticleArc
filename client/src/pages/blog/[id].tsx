@@ -1,55 +1,53 @@
-"use client";
-import BlogLoader from "@/src/components/atoms/blog-loader";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import {
+  BlogData,
+  useGetBlogQuery,
+  useGetOwnerQuery,
+} from "../../lib/features/api/apiSlice";
+import BlogLoader from "../../components/atoms/blog-loader";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-
-export interface BlogData {
-  banner: {
-    public_id: string;
-    url: string;
-  };
-  title: string;
-  description: string;
-  _id: string;
-  createdAt: any;
-  owner: string;
-  tag: string;
-}
 
 export default function Blog() {
   const router = useRouter();
   const { id } = router.query;
+
+  const [owner, setOwner] = useState<string>("");
   const [data, setData] = useState<BlogData | null>(null);
-  const [loading, setLoading] = useState(false);
+
+  const {
+    data: blogResponse,
+    isSuccess: blogSuccess,
+    isLoading: blogLoading,
+    error: blogError,
+  } = useGetBlogQuery(id as string);
+
+  const {
+    data: ownerData,
+    isSuccess: ownerSuccess,
+    isLoading: ownerLoading,
+    error: ownerError,
+  } = useGetOwnerQuery(data?.owner || "");
 
   useEffect(() => {
-    async function fetchBlog() {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/get-blog/${id}`
-        );
-        if (response.data.success) {
-          setData(response.data.blog);
-          setLoading(false);
-        }
-      } catch (error) {
-        toast.error("error");
-      }
-      setLoading(false);
+    if (blogSuccess && blogResponse) {
+      setData(blogResponse.blog);
     }
-    fetchBlog();
-  }, [id]);
+  }, [blogSuccess, blogResponse]);
 
-  if (loading) {
+  useEffect(() => {
+    if (ownerSuccess && ownerData) {
+      setOwner(ownerData.user.name);
+    }
+  }, [ownerSuccess, ownerData]);
+
+  if (blogLoading || router.isFallback) {
     return <BlogLoader />;
   }
-  if (router.isFallback) {
-    return <div>Loading...</div>;
+
+  if (blogError) {
+    return <div>Error loading blog data</div>;
   }
 
   return (
@@ -65,6 +63,7 @@ export default function Blog() {
           <div className="flex flex-col space-y-3">
             <p className="flex justify-between items-center">
               <span className="tag">{data?.tag}</span>
+              <span>{ownerLoading ? "loading..." : owner}</span>
             </p>
             <Image
               src={data?.banner?.url || ""}
@@ -73,6 +72,7 @@ export default function Blog() {
               alt="image"
               className="rounded-lg h-80 w-full object-cover"
               title={data?.title}
+              priority={false}
             />
             <div
               className="font-outfit text-gray-500 blogDescription"

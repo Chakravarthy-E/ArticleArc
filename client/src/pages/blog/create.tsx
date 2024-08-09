@@ -8,10 +8,12 @@ import { getAuthState } from "../../lib/slices/auth";
 import axios from "axios";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { useCreateBlogMutation } from "@/src/lib/features/api/apiSlice";
 
 export default function CreateBlog() {
   const { profile } = useSelector(getAuthState);
   const router = useRouter();
+  const [createBlog, { isSuccess, isLoading }] = useCreateBlogMutation();
 
   const [editorContent, setEditorContent] = useState("");
   const [data, setData] = useState({
@@ -38,27 +40,31 @@ export default function CreateBlog() {
       return;
     }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/create-blog/${profile._id}`,
-        data
-      );
-      if (response.status === 201) {
-        toast.success("Blog created successfully");
-
-        setTimeout(() => {
-          router.push("/profile");
-        }, 2000);
-      }
-      setData({
-        banner: "",
-        title: "",
-        description: "",
-        tag: "",
+      await createBlog({
+        id: profile?._id,
+        title: data.title,
+        banner: data.banner,
+        description: data.description,
+        tag: data.tag,
       });
     } catch (error: any) {
       toast.error("Error creating blog:", error?.message);
     }
   };
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Blog created successfully");
+      setTimeout(() => {
+        router.push("/profile");
+      }, 2000);
+    }
+    setData({
+      banner: "",
+      title: "",
+      description: "",
+      tag: "",
+    });
+  }, [isSuccess]);
 
   return (
     <>

@@ -1,12 +1,15 @@
 "use client";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import Image from "next/image";
 import HeroSectionLoader from "../atoms/hero-section-loader";
+import {
+  useGetAllBlogsQuery,
+  useGetOwnerQuery,
+} from "../../lib/features/api/apiSlice";
 
-interface BlogInterface {
+export interface BlogInterface {
   banner: {
     public_id: string;
     url: string;
@@ -16,63 +19,57 @@ interface BlogInterface {
   _id: string;
   tag?: string;
   createdAt: string;
-  owner?: any;
+  owner?: string;
 }
 
 export default function Hero() {
   const [blog, setBlog] = useState<BlogInterface | null>(null);
-  const [owner, setOwner] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [owner, setOwner] = useState<string | null>(null);
+
+  // Fetch all blogs
+  const {
+    data: blogsData,
+    isSuccess: blogsSuccess,
+    isLoading: blogsLoading,
+    error: blogsError,
+  } = useGetAllBlogsQuery();
+
+  const {
+    data: ownerData,
+    isSuccess: ownerSuccess,
+    isLoading: ownerLoading,
+    error: ownerError,
+  } = useGetOwnerQuery(blog?.owner || "");
 
   useEffect(() => {
-    const getBlog = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/get-all-blogs`
-        );
-        if (response.data.success) {
-          setBlog(response.data.blogs[0]);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-      setLoading(false);
-    };
-    getBlog();
-  }, []);
+    if (blogsSuccess && blogsData?.blogs?.length > 0) {
+      setBlog(blogsData.blogs[0]);
+    }
+  }, [blogsSuccess, blogsData]);
 
   useEffect(() => {
-    const getOwner = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/get-user/${blog?.owner}`
-        );
-        setOwner(response.data.user.name);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getOwner();
-  }, [blog?.owner]);
+    if (ownerSuccess) {
+      setOwner(ownerData.user.name);
+    }
+  }, [ownerData, ownerSuccess]);
 
-  if (loading) {
+  if (blogsLoading || ownerLoading) {
     return <HeroSectionLoader />;
+  }
+
+  if (blogsError || ownerError) {
+    console.error("Error loading data:", blogsError || ownerError);
+    return <div>Error loading data</div>;
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-5 sm:px-10 py-10">
-      {blog && (
+      {blog ? (
         <div className="flex flex-col space-y-5 w-full max-w-7xl">
           <h1 className="text-3xl font-bold font-outfit underline">
             Latest Blog
           </h1>
-          <Link
-            href={`/blog/${blog._id}`}
-            as={`/blog/${blog._id}`}
-            className=""
-          >
+          <Link href={`/blog/${blog._id}`}>
             <div className="flex flex-col-reverse md:flex-row md:space-x-5 md:space-y-0">
               <div className="md:w-1/2 flex justify-center md:justify-start">
                 <Image
@@ -81,13 +78,14 @@ export default function Hero() {
                   width={500}
                   height={400}
                   className="w-full rounded-lg h-96 object-cover"
+                  priority={false} // Ensuring lazy loading
                 />
               </div>
               <div className="flex flex-col space-y-5 md:w-1/2">
                 <div className="flex justify-between">
                   <span className="tag">{blog?.tag?.toLocaleUpperCase()}</span>
                   <span className="font-semibold">
-                    {format(blog.createdAt, "dd-MM-yyyy")}
+                    {format(new Date(blog.createdAt), "dd-MM-yyyy")}
                   </span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-bold font-outfit">
@@ -102,6 +100,8 @@ export default function Hero() {
             </div>
           </Link>
         </div>
+      ) : (
+        <div>No blog available</div>
       )}
     </div>
   );
