@@ -1,53 +1,65 @@
 import { useEffect, useState } from "react";
-import {
-  BlogData,
-  useGetBlogQuery,
-  useGetOwnerQuery,
-} from "../../lib/features/api/apiSlice";
 import BlogLoader from "../../components/atoms/blog-loader";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-
+import axios from "axios";
+import type { Blog } from "@/types/types";
 export default function Blog() {
   const router = useRouter();
   const { id } = router.query;
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<Blog | null>(null);
   const [owner, setOwner] = useState<string>("");
-  const [data, setData] = useState<BlogData | null>(null);
-
-  const {
-    data: blogResponse,
-    isSuccess: blogSuccess,
-    isLoading: blogLoading,
-    error: blogError,
-  } = useGetBlogQuery(id as string);
-
-  const {
-    data: ownerData,
-    isSuccess: ownerSuccess,
-    isLoading: ownerLoading,
-    error: ownerError,
-  } = useGetOwnerQuery(data?.owner || "");
 
   useEffect(() => {
-    if (blogSuccess && blogResponse) {
-      setData(blogResponse.blog);
-    }
-  }, [blogSuccess, blogResponse]);
+    const fetchBlog = async () => {
+      if (!id) {
+        return;
+      }
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/get-blog/${id}`
+        );
+
+        if (response.status === 200) {
+          setData(response.data.blog);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBlog();
+  }, [id]);
 
   useEffect(() => {
-    if (ownerSuccess && ownerData) {
-      setOwner(ownerData.user.name);
-    }
-  }, [ownerSuccess, ownerData]);
+    const fetchOwner = async () => {
+      if (!data?.owner) {
+        return;
+      }
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/get-user/${data?.owner}`
+        );
 
-  if (blogLoading || router.isFallback) {
+        if (response.status === 200) {
+          setOwner(response.data.user.name);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOwner();
+  }, [data?.owner]);
+
+  if (isLoading) {
     return <BlogLoader />;
-  }
-
-  if (blogError) {
-    return <div>Error loading blog data</div>;
   }
 
   return (
@@ -63,7 +75,7 @@ export default function Blog() {
           <div className="flex flex-col space-y-3">
             <p className="flex justify-between items-center">
               <span className="tag">{data?.tag}</span>
-              <span>{ownerLoading ? "loading..." : owner}</span>
+              <span>{isLoading ? "loading..." : owner}</span>
             </p>
             <Image
               src={data?.banner?.url || ""}
@@ -76,7 +88,9 @@ export default function Blog() {
             />
             <div
               className="font-outfit text-gray-500 blogDescription"
-              dangerouslySetInnerHTML={{ __html: data?.description || "" }}
+              dangerouslySetInnerHTML={{
+                __html: data?.description || "",
+              }}
             />
           </div>
         </div>

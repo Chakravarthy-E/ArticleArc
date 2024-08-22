@@ -3,7 +3,6 @@ import blogModel from "../models/blog.model";
 import cloudinary from "cloudinary";
 import ErrorHandler from "../utils/ErrorHandler";
 import userModel from "../models/user.model";
-import { IBlog } from "../models/blog.model";
 
 export const createBlog = async (
   req: Request,
@@ -170,6 +169,60 @@ export const getBlogsByOwner = async (
       });
     }
     res.status(200).json(blogs);
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+};
+
+export const getAllTags = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const tags = await blogModel.aggregate([
+      { $unwind: "$tag" },
+      { $group: { _id: "$tag", count: { $sum: 1 } } },
+      { $project: { _id: 0, tag: "$_id", count: 1 } },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      tags,
+    });
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+};
+
+export const getBlogsByTag = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const tag = req.params.tag;
+
+    if (!tag) {
+      return res.status(400).json({
+        success: false,
+        message: "Tag is required",
+      });
+    }
+
+    const blogs = await blogModel.find({ tag: tag });
+
+    if (!blogs || blogs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No blogs found for this tag",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      blogs,
+    });
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 400));
   }

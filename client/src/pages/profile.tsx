@@ -1,61 +1,61 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { getAuthState } from "../lib/slices/auth";
 import axios from "axios";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 import BlogCard from "../components/atoms/blog-card";
 import toast from "react-hot-toast";
-import { useRouter } from "next/router";
 import DeleteConfirmModal from "../components/atoms/delete-blog-modal";
 import ProfileLoader from "../components/atoms/profile-loader";
 import Head from "next/head";
 import Protected from "../hooks/useProtected";
-import {
-  useDeleteBlogMutation,
-  useGetBlogsByOwnerQuery,
-} from "../lib/features/api/apiSlice";
 
 function Profile() {
-  const { profile } = useSelector(getAuthState);
-  console.log(profile);
-  const [userBlogs, setUserBlogs] = useState<any | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
+  const [userBlogs, setUserBlogs] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<any | null>(null);
   const router = useRouter();
-  const { data, isSuccess, isLoading } = useGetBlogsByOwnerQuery(profile?._id);
-  const [deleteBlog, { isSuccess: deleteSuccess }] = useDeleteBlogMutation();
 
   useEffect(() => {
-    if (isSuccess && data?.length > 0) {
-      setUserBlogs(data);
+    const userCookie = Cookies.get("user");
+    if (!userCookie) {
+      router.push("/auth/sign-in");
+      return;
     }
-  }, [isSuccess, data, profile]);
+
+    const parsedProfile = JSON.parse(userCookie);
+    setProfile(parsedProfile);
+  }, [router]);
+
+  useEffect(() => {
+    if (profile?._id) {
+      const fetchUserBlogs = async () => {
+        try {
+          setIsLoading(true);
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/get-blogs-by-owner/${profile._id}`
+          );
+          if (response.status === 200) {
+            setUserBlogs(response.data);
+          } else {
+            toast.error("Failed to fetch blogs");
+          }
+        } catch (error) {
+          toast.error("Error fetching blogs");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchUserBlogs();
+    }
+  }, [profile]);
 
   const handleDeleteClick = (blog: any) => {
     setBlogToDelete(blog);
     setOpenDeleteDialog(true);
-  };
-
-  useEffect(() => {
-    if (deleteSuccess) {
-      toast.success("Deleted successfully");
-      setUserBlogs(
-        (prevBlogs: any) =>
-          prevBlogs?.filter((blog: any) => blog._id !== blogToDelete._id) ||
-          null
-      );
-      setOpenDeleteDialog(false);
-      setBlogToDelete(null);
-    }
-  }, [deleteSuccess, blogToDelete]);
-
-  const confirmDelete = async () => {
-    try {
-      await deleteBlog(blogToDelete._id);
-    } catch (error: any) {
-      const errorMessage = error?.data?.message || "Delete failed";
-      toast.error(errorMessage);
-    }
   };
 
   const cancelDelete = () => {
@@ -63,11 +63,23 @@ function Profile() {
     setBlogToDelete(null);
   };
 
-  useEffect(() => {
-    if (profile === null) {
-      router.push("/auth/sign-in");
+  const confirmDelete = async () => {
+    if (blogToDelete) {
+      try {
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/delete/${blogToDelete._id}`
+        );
+
+        setUserBlogs((prevBlogs) =>
+          prevBlogs.filter((blog) => blog._id !== blogToDelete._id)
+        );
+        toast.success("Blog deleted successfully.");
+        cancelDelete();
+      } catch (error) {
+        toast.error("Failed to delete the blog.");
+      }
     }
-  }, [profile, router]);
+  };
 
   if (isLoading) {
     return <ProfileLoader />;
@@ -83,55 +95,65 @@ function Profile() {
       </Head>
 
       <Protected>
-        <div className="min-h-screen flex items-center justify-center px-5 sm:px-10 py-10">
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-10">
           <div className="w-full max-w-7xl">
-            <div className="flex items-center space-x-4 justify-between">
-              <div>
-                <p className="space-x-4">
-                  <span className="text-xl font-bold text-gray-700">Name</span>
-                  <span className="text-2xl font-bold">{profile?.name}</span>
+            {/* Profile Info Section */}
+            <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6 justify-between">
+              <div className="text-center md:text-left">
+                <p className="text-lg md:text-xl font-bold text-gray-700">
+                  Name:{" "}
+                  <span className="text-2xl md:text-3xl font-bold text-gray-900">
+                    {profile?.name}
+                  </span>
                 </p>
-                <p className="space-x-4">
-                  <span className="text-xl font-bold text-gray-700">Email</span>
-                  <span className="text-2xl font-bold">{profile?.email}</span>
+                <p className="text-lg md:text-xl font-bold text-gray-700 mt-2">
+                  Email:{" "}
+                  <span className="text-2xl md:text-3xl font-bold text-gray-900">
+                    {profile?.email}
+                  </span>
                 </p>
               </div>
               <button
-                className="button-style"
+                className="button-style mt-4 md:mt-0"
                 onClick={() => router.push("/blog/create")}
               >
                 Create New Blog
               </button>
             </div>
-            <div className="mt-10">
-              <h2 className="text-3xl font-semibold">Your Blogs</h2>
-              <div className="mt-5">
-                {profile?.blogs.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-                    {userBlogs?.map((blog: any) => (
-                      <div
-                        key={blog._id}
-                        className="opacity-90 hover:opacity-100"
-                      >
-                        <BlogCard key={blog._id} {...blog} />
-                        <div className="flex space-x-2 items-center w-full mt-2">
-                          <button
-                            className="button-style"
-                            onClick={() => handleDeleteClick(blog)}
-                          >
-                            Delete
-                          </button>
-                        </div>
+
+            {/* Blog List Section */}
+            <div className="mt-12">
+              <h2 className="text-2xl md:text-3xl font-semibold text-center md:text-left">
+                Your Blogs
+              </h2>
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {userBlogs.length > 0 ? (
+                  userBlogs.map((blog: any) => (
+                    <div
+                      key={blog._id}
+                      className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200"
+                    >
+                      <BlogCard key={blog._id} {...blog} />
+                      <div className="flex justify-between items-center mt-4">
+                        <button
+                          className="button-style"
+                          onClick={() => handleDeleteClick(blog)}
+                        >
+                          Delete
+                        </button>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))
                 ) : (
-                  <div className="text-gray-500">No blogs available</div>
+                  <div className="text-gray-500 text-center col-span-full">
+                    No blogs available
+                  </div>
                 )}
               </div>
             </div>
           </div>
 
+          {/* Delete Confirmation Modal */}
           {openDeleteDialog && (
             <DeleteConfirmModal cancel={cancelDelete} confirm={confirmDelete} />
           )}

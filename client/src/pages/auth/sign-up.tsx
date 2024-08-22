@@ -1,5 +1,6 @@
 "use client";
 import { useRegisterMutation } from "@/src/lib/features/api/apiSlice";
+import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -13,7 +14,7 @@ interface RegistrationData {
 }
 
 export default function SignUp() {
-  const [register, { isSuccess, isLoading }] = useRegisterMutation();
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<RegistrationData>({
     name: "",
     email: "",
@@ -24,21 +25,28 @@ export default function SignUp() {
 
   const handleSignUp = async () => {
     try {
-      await register(user).unwrap();
-    } catch (err: any) {
-      const errorMessage = err?.data?.message || "Registration failed";
+      setIsLoading(true);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/create`
+      );
+      if (response.status) {
+        setUser({
+          name: "",
+          email: "",
+          password: "",
+        });
+        toast.success("Account created Successful");
+        setTimeout(() => {
+          router.push("/");
+        }, 1000);
+      }
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "SignUp failed";
       toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (isSuccess) {
-      if (isSuccess) {
-        toast.success("Registration Successful");
-        setUser({ name: "", email: "", password: "" });
-        setTimeout(() => router.push("/auth/sign-in"), 1000);
-      }
-    }
-  }, [isSuccess]);
   return (
     <>
       <Head>
@@ -114,7 +122,7 @@ export default function SignUp() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button className="button-style" onClick={handleSignUp}>
+              <button className="button-style" onClick={() => handleSignUp}>
                 {isLoading ? "Loading..." : "Sign-Up "}
               </button>
               <p className="text-center">

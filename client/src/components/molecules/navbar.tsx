@@ -1,23 +1,19 @@
 "use client";
-import { clearProfile } from "../../lib/slices/auth";
 import Cookies from "js-cookie";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
 import LogoutConfirmModal from "../atoms/logout-confirm-modal";
 
 const Navbar = () => {
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
-  const dispatch = useDispatch();
   const token = Cookies.get("token");
   const router = useRouter();
 
   const handleLogout = () => {
     Cookies.remove("token");
     Cookies.remove("user");
-    dispatch(clearProfile());
     setOpenLogoutModal(false);
     toast.success("Logged out successfully");
   };

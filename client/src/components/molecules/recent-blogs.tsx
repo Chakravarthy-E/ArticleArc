@@ -2,9 +2,9 @@
 
 import BlogCard from "../atoms/blog-card";
 import RecentBlogLoader from "../atoms/recent-blogs-loader";
-import { useGetAllBlogsQuery } from "../../lib/features/api/apiSlice";
 import { useEffect, useState } from "react";
 import { BlogInterface } from "./hero";
+import axios from "axios";
 
 export interface BlogResponse {
   blogs: BlogInterface[];
@@ -13,20 +13,37 @@ export interface BlogResponse {
 
 export default function RecentBlogs() {
   const [blogs, setBlogs] = useState<BlogInterface[]>([]);
-  const { data, isSuccess, isLoading, error } = useGetAllBlogsQuery();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isSuccess && data?.blogs?.length > 0) {
-      setBlogs(data.blogs);
-    }
-  }, [isSuccess, data]);
+    const fetchBlogs = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<BlogResponse>(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/get-all-blogs`
+        );
+
+        if (response.status === 200 && response.data?.blogs?.length > 0) {
+          setBlogs(response.data.blogs);
+        } else {
+          setError("No blogs found.");
+        }
+      } catch (err) {
+        setError("Failed to fetch blogs.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBlogs();
+  }, []);
 
   if (isLoading) {
     return <RecentBlogLoader />;
   }
 
   if (error) {
-    return <div className="text-red-500">Error loading blogs</div>;
+    return <div className="text-red-500">{error}</div>;
   }
 
   return (

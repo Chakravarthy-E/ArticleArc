@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -10,46 +9,48 @@ import { useDispatch } from "react-redux";
 import { updateLoggedInState } from "../../lib/slices/auth";
 import Head from "next/head";
 import { useLoginMutation } from "@/src/lib/features/api/apiSlice";
+import axios from "axios";
 
 interface LoginData {
   email: string;
   password: string;
 }
 export default function SignIn() {
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<LoginData>({
     email: "",
     password: "",
   });
-  const [login, { data, isSuccess, isLoading }] = useLoginMutation();
+
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const dispatch = useDispatch();
-
   const handleLogin = async () => {
     try {
-      await login(user).unwrap();
+      setIsLoading(true);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/sign-in`,
+        user
+      );
+      if (response.status) {
+        setUser({
+          email: "",
+          password: "",
+        });
+        Cookies.set("user", JSON.stringify(response.data.user));
+        Cookies.set("token", response.data.token);
+        toast.success("Logged in Successful");
+        setTimeout(() => {
+          router.push("/");
+        }, 1000);
+      }
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Login failed";
       toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      setUser({
-        email: "",
-        password: "",
-      });
-      dispatch(updateLoggedInState(true));
-      Cookies.set("user", JSON.stringify(data.user));
-      Cookies.set("token", data.token);
-      toast.success("Logged in Successful");
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
-    }
-  }, [isSuccess]);
 
   const token = Cookies.get("token");
   useEffect(() => {

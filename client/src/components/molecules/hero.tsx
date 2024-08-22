@@ -1,19 +1,13 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import Image from "next/image";
 import HeroSectionLoader from "../atoms/hero-section-loader";
-import {
-  useGetAllBlogsQuery,
-  useGetOwnerQuery,
-} from "../../lib/features/api/apiSlice";
+import axios from "axios";
 
 export interface BlogInterface {
-  banner: {
-    public_id: string;
-    url: string;
-  };
+  banner: { public_id: string; url: string };
   title: string;
   description: string;
   _id: string;
@@ -25,41 +19,62 @@ export interface BlogInterface {
 export default function Hero() {
   const [blog, setBlog] = useState<BlogInterface | null>(null);
   const [owner, setOwner] = useState<string | null>(null);
-
-  // Fetch all blogs
-  const {
-    data: blogsData,
-    isSuccess: blogsSuccess,
-    isLoading: blogsLoading,
-    error: blogsError,
-  } = useGetAllBlogsQuery();
-
-  const {
-    data: ownerData,
-    isSuccess: ownerSuccess,
-    isLoading: ownerLoading,
-    error: ownerError,
-  } = useGetOwnerQuery(blog?.owner || "");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (blogsSuccess && blogsData?.blogs?.length > 0) {
-      setBlog(blogsData.blogs[0]);
-    }
-  }, [blogsSuccess, blogsData]);
+    const fetchBlogData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/get-all-blogs`
+        );
+        if (response.status === 200 && response.data?.blogs?.length > 0) {
+          setBlog(response.data.blogs[0]);
+        } else {
+          setError("No blog found.");
+        }
+      } catch (err) {
+        setError("Failed to fetch blog.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBlogData();
+  }, []);
 
   useEffect(() => {
-    if (ownerSuccess) {
-      setOwner(ownerData.user.name);
-    }
-  }, [ownerData, ownerSuccess]);
+    const fetchOwnerData = async () => {
+      if (blog?.owner) {
+        try {
+          setIsLoading(true);
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/get-user/${blog.owner}`
+          );
+          if (response.status === 200) {
+            setOwner(response.data?.user?.name);
+          }
+        } catch (err) {
+          setError("Failed to fetch owner data.");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchOwnerData();
+  }, [blog?.owner]);
 
-  if (blogsLoading || ownerLoading) {
+  const formattedDate = useMemo(
+    () => (blog ? format(new Date(blog.createdAt), "dd-MM-yyyy") : ""),
+    [blog]
+  );
+
+  if (isLoading) {
     return <HeroSectionLoader />;
   }
 
-  if (blogsError || ownerError) {
-    console.error("Error loading data:", blogsError || ownerError);
-    return <div>Error loading data</div>;
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
   }
 
   return (
@@ -70,7 +85,7 @@ export default function Hero() {
             Latest Blog
           </h1>
           <Link href={`/blog/${blog._id}`}>
-            <div className="flex flex-col-reverse md:flex-row md:space-x-5 md:space-y-0">
+            <div className="flex flex-col-reverse md:flex-row md:space-x-5">
               <div className="md:w-1/2 flex justify-center md:justify-start">
                 <Image
                   src={blog.banner.url}
@@ -78,15 +93,12 @@ export default function Hero() {
                   width={500}
                   height={400}
                   className="w-full rounded-lg h-96 object-cover"
-                  priority={false} // Ensuring lazy loading
                 />
               </div>
               <div className="flex flex-col space-y-5 md:w-1/2">
                 <div className="flex justify-between">
-                  <span className="tag">{blog?.tag?.toLocaleUpperCase()}</span>
-                  <span className="font-semibold">
-                    {format(new Date(blog.createdAt), "dd-MM-yyyy")}
-                  </span>
+                  <span className="tag">{blog?.tag?.toUpperCase()}</span>
+                  <span className="font-semibold">{formattedDate}</span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-bold font-outfit">
                   {blog.title}
