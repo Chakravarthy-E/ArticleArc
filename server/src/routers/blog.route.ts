@@ -8,6 +8,7 @@ import {
   getBlog,
   getBlogsByOwner,
   getBlogsByTag,
+  searchBlogs,
 } from "../controllers/blog.controller";
 
 const blogRouter = express.Router();
@@ -20,5 +21,6 @@ blogRouter.delete("/delete/:id", deleteBlog);
 blogRouter.get("/get-blogs-by-owner/:owner", getBlogsByOwner);
 blogRouter.get("/tags", getAllTags);
 blogRouter.get("/tag/:tag", getBlogsByTag);
+blogRouter.get("/search", searchBlogs);
 
 export default blogRouter;

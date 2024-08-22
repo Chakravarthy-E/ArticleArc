@@ -227,3 +227,45 @@ export const getBlogsByTag = async (
     return next(new ErrorHandler(error.message, 400));
   }
 };
+
+export const searchBlogs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { query } = req.query;
+    if (!query || typeof query !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Query parameter is required and should be a string",
+      });
+    }
+    const searchQuery = query.toLowerCase();
+
+    const blogs = await blogModel.find({
+      $or: [
+        {
+          title: { $regex: searchQuery, $options: "i" },
+        },
+        {
+          tag: { $regex: searchQuery, $options: "i" },
+        },
+      ],
+    });
+
+    if (!blogs || blogs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No blogs found matching the search criteria",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      blogs,
+    });
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+};

@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Hero from "../components/molecules/hero";
 import RecentBlogs from "../components/molecules/recent-blogs";
+import TagTabs from "../components/molecules/tag-tabs";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <div className="space-y-4">
         <Hero />
         <RecentBlogs />
+        <TagTabs />
       </div>
     </>
   );
