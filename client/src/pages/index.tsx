@@ -1,9 +1,7 @@
 import Head from "next/head";
-import Hero from "../components/molecules/hero";
-import RecentBlogs from "../components/molecules/recent-blogs";
-import TagTabs from "../components/molecules/tag-tabs";
+import Home from "../components/molecules/home";
 
-export default function Home() {
+export default function Page() {
   return (
     <>
       <Head>
@@ -12,10 +10,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/blog.svg" />
       </Head>
-      <div className="space-y-4">
-        <Hero />
-        <RecentBlogs />
-        <TagTabs />
+      <div>
+        <Home />
       </div>
     </>
   );

@@ -74,12 +74,12 @@ export default function CreateBlog() {
         <link rel="icon" href="/blog.svg" />
       </Head>
       <Protected>
-        <div className="flex items-center justify-center flex-col py-10 w-full font-outfit min-h-screen bg-gray-50 px-4">
+        <div className="flex items-center justify-center flex-col py-10 w-full font-outfit min-h-screen px-4">
           <h1 className="text-3xl font-semibold my-6 text-center">
             Create A Blog
           </h1>
 
-          <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-6">
+          <div className="w-full max-w-2xl  shadow-md rounded-lg p-6">
             <div className="mb-6">
               <label className="label-style" htmlFor="banner">
                 Banner <span className="text-red-500">*</span>

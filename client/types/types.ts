@@ -16,7 +16,22 @@ export interface Blog {
   __v: number;
 }
 
+export interface BlogInterface {
+  banner: { public_id: string; url: string };
+  title: string;
+  description: string;
+  _id: string;
+  tag?: string;
+  createdAt: string;
+  owner?: string;
+}
+
 export interface BlogResponse {
-  blogs: Blog[];
-  success: boolean;
+  blogs: BlogInterface[];
+}
+
+export interface Tag {
+  _id: string;
+  tag: string;
+  count: number;
 }

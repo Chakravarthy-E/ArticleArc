@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import BlogLoader from "../../components/atoms/blog-loader";
 import Head from "next/head";
@@ -75,7 +76,9 @@ export default function Blog() {
           <div className="flex flex-col space-y-3">
             <p className="flex justify-between items-center">
               <span className="tag">{data?.tag}</span>
-              <span>{isLoading ? "loading..." : owner}</span>
+              <span className="font-outfit font-semibold text-gray-600">
+                {isLoading ? "loading..." : owner}
+              </span>
             </p>
             <Image
               src={data?.banner?.url || ""}

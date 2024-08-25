@@ -97,18 +97,17 @@ function Profile() {
       <Protected>
         <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-10">
           <div className="w-full max-w-7xl">
-            {/* Profile Info Section */}
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6 justify-between">
               <div className="text-center md:text-left">
-                <p className="text-lg md:text-xl font-bold text-gray-700">
+                <p className="text-lg md:text-xl font-bold text-gray-700 dark:text-white">
                   Name:{" "}
-                  <span className="text-2xl md:text-3xl font-bold text-gray-900">
+                  <span className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                     {profile?.name}
                   </span>
                 </p>
-                <p className="text-lg md:text-xl font-bold text-gray-700 mt-2">
+                <p className="text-lg md:text-xl font-bold text-gray-700 mt-2 dark:text-white">
                   Email:{" "}
-                  <span className="text-2xl md:text-3xl font-bold text-gray-900">
+                  <span className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                     {profile?.email}
                   </span>
                 </p>
@@ -121,7 +120,6 @@ function Profile() {
               </button>
             </div>
 
-            {/* Blog List Section */}
             <div className="mt-12">
               <h2 className="text-2xl md:text-3xl font-semibold text-center md:text-left">
                 Your Blogs
@@ -131,7 +129,7 @@ function Profile() {
                   userBlogs.map((blog: any) => (
                     <div
                       key={blog._id}
-                      className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200"
+                      className=" rounded-lg  p-4 hover:shadow-lg transition-shadow duration-200"
                     >
                       <BlogCard key={blog._id} {...blog} />
                       <div className="flex justify-between items-center mt-4">

@@ -9,9 +9,11 @@ function DeleteConfirmModal({
 }) {
   return (
     <div className="fixed  font-outfit inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-2xl font-bold mb-4">Confirm Delete</h3>
-        <p className="text-xl font-semibold">
+      <div className="bg-white  border p-6 rounded-lg shadow-lg">
+        <h3 className="text-2xl font-bold mb-4 dark:text-black">
+          Confirm Delete
+        </h3>
+        <p className="text-xl font-semibold dark:text-black">
           Are you sure you want to delete this blog?
         </p>
         <div className="mt-4 flex justify-end space-x-2">
