@@ -95,7 +95,7 @@ function Profile() {
       </Head>
 
       <Protected>
-        <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-10">
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-10">
           <div className="w-full max-w-7xl">
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6 justify-between">
               <div className="text-center md:text-left">
@@ -129,7 +129,7 @@ function Profile() {
                   userBlogs.map((blog: any) => (
                     <div
                       key={blog._id}
-                      className=" rounded-lg  p-4 hover:shadow-lg transition-shadow duration-200"
+                      className="rounded-lg p-4 hover:shadow-lg transition-shadow duration-200"
                     >
                       <BlogCard key={blog._id} {...blog} />
                       <div className="flex justify-between items-center mt-4">
@@ -150,8 +150,6 @@ function Profile() {
               </div>
             </div>
           </div>
-
-          {/* Delete Confirmation Modal */}
           {openDeleteDialog && (
             <DeleteConfirmModal cancel={cancelDelete} confirm={confirmDelete} />
           )}
