@@ -45,11 +45,12 @@ function AllTags() {
       setIsLoading(false);
     }
   }, []);
+
   return (
-    <div className="flex items-center justify-center py-5 ">
+    <div className="flex items-center justify-center py-5 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-7xl flex flex-col space-y-6">
         <Title title="All Tags" />
-        <div className="grid grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
           {tags?.map((item) => (
             <Link
               key={item._id}
@@ -58,7 +59,7 @@ function AllTags() {
             >
               <div
                 key={item.tag}
-                className={`px-10 py-4 text-start rounded shadow-md `}
+                className={`px-6  md:px-8 lg:px-10 py-4 text-start rounded shadow-md  transition duration-200 ease-in-out`}
               >
                 <p className="text-xl font-semibold">{item.tag}</p>
                 <p>

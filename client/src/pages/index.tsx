@@ -10,7 +10,7 @@ export default function Page() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/blog.svg" />
       </Head>
-      <div>
+      <div className="flex flex-col min-h-screen justify-center items-center  p-4 md:p-8">
         <Home />
       </div>
     </>

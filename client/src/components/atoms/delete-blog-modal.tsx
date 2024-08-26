@@ -13,7 +13,7 @@ function DeleteConfirmModal({
         <h3 className="text-2xl font-bold mb-4 dark:text-black">
           Confirm Delete
         </h3>
-        <p className="text-xl font-semibold dark:text-black">
+        <p className="text-xl font-semibold dark:text-white">
           Are you sure you want to delete this blog?
         </p>
         <div className="mt-4 flex justify-end space-x-2">

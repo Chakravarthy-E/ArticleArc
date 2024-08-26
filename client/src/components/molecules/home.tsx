@@ -1,8 +1,10 @@
+"use client";
 import React from "react";
 import { Title } from "../ui/title";
 import TagTabs from "./tag-tabs";
 import Link from "next/link";
 import AllBlogs from "./all-blogs";
+import Loader from "../atoms/loader";
 
 function Home() {
   return (

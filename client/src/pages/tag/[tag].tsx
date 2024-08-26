@@ -10,14 +10,12 @@ function Tag() {
   const router = useRouter();
   const { tag } = router.query;
 
-  // State Types
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [blogs, setBlogs] = useState<any[]>([]);
 
   useEffect(() => {
-    // Fetch Blogs by Tag - With Type Annotations
     const fetchBlogsByTag = async (tag: string) => {
-      if (!tag) return; // Ensure tag is defined before fetching
+      if (!tag) return;
       setIsLoading(true);
       try {
         const response = await axios.get(
@@ -41,14 +39,14 @@ function Tag() {
   }, [blogs]);
 
   return (
-    <div className="flex items-center justify-center py-5">
-      <div className="w-full max-w-7xl  space-y-6">
+    <div className="flex items-center justify-center py-5 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-7xl space-y-6">
         <Title title={`All ${tag} Related Articles`} />
 
         {isLoading ? (
           <p>Loading...</p>
         ) : blogs.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
             {renderedBlogs}
           </div>
         ) : (

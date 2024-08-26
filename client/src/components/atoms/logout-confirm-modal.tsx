@@ -10,8 +10,10 @@ function LogoutConfirmModal({
   return (
     <div className="fixed  font-outfit inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-2xl font-bold mb-4">Confirm Logout</h3>
-        <p className="text-xl font-semibold">
+        <h3 className="text-2xl font-bold mb-4 dark:text-black">
+          Confirm Logout
+        </h3>
+        <p className="text-xl font-semibold dark:text-black">
           Are you sure you want to Logout?
         </p>
         <div className="mt-4 flex justify-end space-x-2">
