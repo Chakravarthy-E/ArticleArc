@@ -24,7 +24,7 @@ function AllBlogs() {
           setError("No blogs found.");
         }
       } catch (err) {
-        console.error(err); // Log the error for debugging
+        console.error(err);
         setError("Failed to fetch blogs.");
       } finally {
         setIsLoading(false);
@@ -34,15 +34,19 @@ function AllBlogs() {
   }, []);
 
   if (isLoading) {
-    return <p>Loading...</p>; // Show a loading indicator
+    return (
+      <p className="flex items-center justify-center min-h-screen">
+        Loading...
+      </p>
+    );
   }
 
   if (error) {
-    return <p>{error}</p>; // Display error message
+    return <p>{error}</p>;
   }
 
   if (blogs.length === 0) {
-    return <p>No blogs available.</p>; // Show a message if no blogs are found
+    return <p>No blogs available.</p>;
   }
 
   return (

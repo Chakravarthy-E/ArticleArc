@@ -9,7 +9,6 @@ import { Title } from "@/src/components/ui/title";
 function Tag() {
   const router = useRouter();
   const { tag } = router.query;
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [blogs, setBlogs] = useState<any[]>([]);
 

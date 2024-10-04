@@ -89,6 +89,9 @@ export default function Blog() {
               title={data?.title}
               priority={false}
             />
+            <h1 className="text-2xl text-blue-500 font-semibold">
+              {data?.title}
+            </h1>
             <div
               className="font-outfit text-gray-500 blogDescription"
               dangerouslySetInnerHTML={{

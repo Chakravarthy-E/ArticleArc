@@ -114,8 +114,9 @@ body {
 }
 
 .blogDescription h3 {
-  font-size: 1.75rem;
+  font-size: 1rem;
   font-weight: bold;
+  margin-top: 1rem;
 }
 
 .blogDescription h4 {
@@ -139,4 +140,9 @@ body {
 
 .blogDescription li {
   margin-bottom: 0.5rem;
+}
+
+.blogDescription code {
+  font-family: monospace;
+  margin-bottom: 2rem;
 }
