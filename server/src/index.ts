@@ -5,6 +5,7 @@ import connectToDB from "./utils/db";
 import userRouter from "./routers/user.router";
 import { v2 as cloudinary } from "cloudinary";
 import blogRouter from "./routers/blog.route";
+import https from "https";
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -57,6 +58,18 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(err.statusCode || 500).json({ message: err.message });
 });
+
+function pingApp() {
+  https
+    .get("https://articlearc.onrender.com/", (res) => {
+      console.log(`Pinging app: ${res.statusCode}`);
+    })
+    .on("error", (e) => {
+      console.error(`Error pinging app: ${e.message}`);
+    });
+}
+
+setInterval(pingApp, 600000);
 
 // Start the server
 app.listen(port, () => {
