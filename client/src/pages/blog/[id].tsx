@@ -93,7 +93,8 @@ export default function Blog() {
               {data?.title}
             </h1>
             <div
-              className="font-outfit text-gray-500 blogDescription"
+              className="font-outfit text-gray-500 blogDescription prose-h3:text-xl prose-h3:text-violet-600 prose-pre:bg-gray-900 text-muted-foreground text-justify prose max-w-none 
+          prose-ol:text-gray-500 prose-strong:text-gray-400 prose-pre:language-javascript prose-code:text-blue-500 prose-code:font-outfit prose-code:tracking-normal"
               dangerouslySetInnerHTML={{
                 __html: data?.description || "",
               }}

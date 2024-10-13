@@ -104,7 +104,7 @@ const TipTopMenuBar = ({ editor }: Props) => {
       </button>
       <button
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-        className={editor.isActive("codeBlock") ? "is-active" : ""}
+        className={editor.isActive("code") ? "is-active" : ""}
       >
         <CodeIcon className="w-6 h-6" />
       </button>

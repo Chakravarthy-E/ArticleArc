@@ -7,7 +7,7 @@ import { ThemeProvider } from "../components/providers/ThemeProvider";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <main className="w-full mx-auto">
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
@@ -18,6 +18,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
         <Toaster position="top-center" reverseOrder={false} />
       </ThemeProvider>
-    </>
+    </main>
   );
 }
